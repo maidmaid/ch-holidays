@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+    <div class="container">
+        <div id="cal-heatmap"></div>
+        {{ form(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        var cal = new CalHeatMap();
+        cal.init({
+            domain: "month",
+            subDomain: "day",
+            data: "{{ path('data') }}",
+            start: new Date(2021, 0),
+            subDomainTextFormat: "%d",
+            range: 13,
+            cellSize: 20,
+            cellRadius: 2,
+            cellPadding: 2,
+            domainMargin: 10,
+            displayLegend: false,
+        });
+        $('form').change(function() {
+            $.post('{{ path('data') }}', $('form').serialize(), function (data) {
+                cal.update(data);
+            })
+        });
+    </script>
+{% endblock %}
