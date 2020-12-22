@@ -8,22 +8,16 @@
             <link rel="stylesheet" href="//cdn.jsdelivr.net/cal-heatmap/3.3.10/cal-heatmap.css" />
         {% endblock %}
     </head>
-    <body class="d-flex h-100" style="background-color: lightgray;">
+    <body class="d-flex h-100 text-center text-white bg-dark">
         {% block body %}
-            <div class="cover-container">
-                <header class="mb-auto">
-                    <div>
-                        <h3 class="float-md-start mb-0">CH Holidays</h3>
-                    </div>
-                </header>
-                <main>
+            <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+                <main class="px-3">
+                    <h1>CH holidays</h1>
+                    <p class="lead">
+                        <a href="https://www.edk.ch/dyn/11707.php">source</a>
+                    </p>
                     {% block main %}{% endblock %}
                 </main>
-                <footer class="footer">
-                    <div class="container">
-                        <p><a href="https://www.edk.ch/dyn/11707.php">source</a></p>
-                    </div>
-                </footer>
             </div>
         {% endblock %}
         {% block javascripts %}
