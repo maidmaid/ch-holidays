@@ -6,6 +6,7 @@ use App\Domain\HolidayManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
+use function Symfony\Component\String\s;
 
 class HolidayFormType extends AbstractType
 {
@@ -25,9 +26,12 @@ class HolidayFormType extends AbstractType
                 'choices' => array_combine($cantons, $cantons),
                 'multiple' => true,
                 'attr' => [
-                    'size' => count($cantons),
+                    'size' => count($cantons) + 2,
                 ],
                 'label' => false,
+                'group_by' => function($choice) {
+                    return s($this->holidayManager->getCantonLanguage($choice))->upper();
+                }
             ])
         ;
     }

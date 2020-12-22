@@ -54,6 +54,15 @@ class HolidayManager
         }, $this->getHolidays());
     }
 
+    public function getCantonLanguage(string $canton): string
+    {
+        foreach ($this->getHolidays() as $holiday) {
+            if ($holiday->canton === $canton) {
+                return $holiday->language;
+            }
+        }
+    }
+
     /**
      * @return string[]
      */

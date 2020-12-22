@@ -5,6 +5,7 @@ namespace App\Domain;
 class Holiday
 {
     public $canton;
+    public $language;
     public $sport;
     public $spring;
     public $summer;
