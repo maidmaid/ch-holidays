@@ -10,6 +10,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
+        var $options = $('select option');
         var cal = new CalHeatMap();
         cal.init({
             domain: "month",
@@ -23,11 +24,26 @@
             cellPadding: 2,
             domainMargin: 10,
             displayLegend: false,
+            onClick: function(date, nb) {
+                var timestamp = '@' + date.getTime() / 1000;
+                $.post('/cantons/' + timestamp, highlightCantons);
+            }
         });
         $('form').change(function() {
+            resetCantons();
             $.post('{{ path('data') }}', $('form').serialize(), function (data) {
                 cal.update(data);
             })
         });
+        function highlightCantons(cantons) {
+            resetCantons();
+            $options
+                .filter(function(i, e) { return !cantons.includes($(e).text())})
+                .css({'opacity': 0.1})
+            ;
+        }
+        function resetCantons() {
+            $options.css({'opacity': 1});
+        }
     </script>
 {% endblock %}

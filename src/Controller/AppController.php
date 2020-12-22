@@ -43,4 +43,13 @@ class AppController extends AbstractController
 
         return $this->json($heatmap);
     }
+
+
+    /**
+     * @Route("/cantons/{date}", name="cantons")
+     */
+    public function cantons(\DateTime $date, HolidayManager $holidayManager): Response
+    {
+        return $this->json($holidayManager->getCantonsByDate($date));
+    }
 }

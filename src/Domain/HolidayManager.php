@@ -55,6 +55,20 @@ class HolidayManager
     }
 
     /**
+     * @return string[]
+     */
+    public function getCantonsByDate(\DateTime $date): array
+    {
+        $filtered = array_filter($this->getHolidays(), function (Holiday $holiday) use ($date) {
+            return in_array($date, $holiday->getDates(), false);
+        });
+
+        return array_values(array_map(function (Holiday $holiday) {
+            return $holiday->canton;
+        }, $filtered));
+    }
+
+    /**
      * @param Holiday[] $holidays
      */
     private function getDatesByHolidays(array $holidays): array
