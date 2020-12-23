@@ -70,7 +70,7 @@
         function highlightCantons(cantons) {
             resetCantons();
             $options
-                .filter(function(i, e) { return !cantons.includes($(e).text())})
+                .filter(function(i, e) { return !cantons.includes($(e).val())})
                 .css({'opacity': 0.1})
             ;
         }

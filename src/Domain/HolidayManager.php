@@ -22,11 +22,33 @@ class HolidayManager
     public function getHolidays(): array
     {
         return $this->serializer->deserialize(
-            file_get_contents($this->projectDir.'/data/2021.csv'),
+            file_get_contents($this->projectDir.'/data/holidays/2021.csv'),
             Holiday::class.'[]',
             'csv',
             [CsvEncoder::DELIMITER_KEY => ';']
         );
+    }
+
+    /**
+     * @return Canton[]
+     */
+    public function getCantons(): array
+    {
+        return $this->serializer->deserialize(
+            file_get_contents($this->projectDir.'/data/cantons.csv'),
+            Canton::class.'[]',
+            'csv',
+            [CsvEncoder::DELIMITER_KEY => ';']
+        );
+    }
+
+    public function getCanton(string $id): Canton
+    {
+        foreach ($this->getCantons() as $canton) {
+            if ($canton->id === $id) {
+                return $canton;
+            }
+        }
     }
 
     /**
@@ -38,29 +60,15 @@ class HolidayManager
     }
 
     /**
+     * @param Canton[] $cantons
+     *
      * @return \DateTime[]
      */
     public function getDatesByCantons(array $cantons = []): array
     {
         return $this->getDatesByHolidays(array_filter($this->getHolidays(), function (Holiday $holiday) use ($cantons) {
-            return in_array($holiday->canton, $cantons, true);
+            return in_array($this->getCanton($holiday->cantonId), $cantons, false);
         }));
-    }
-
-    public function getCantons(): array
-    {
-        return array_map(function (Holiday $holiday) {
-            return $holiday->canton;
-        }, $this->getHolidays());
-    }
-
-    public function getCantonLanguage(string $canton): string
-    {
-        foreach ($this->getHolidays() as $holiday) {
-            if ($holiday->canton === $canton) {
-                return $holiday->language;
-            }
-        }
     }
 
     /**
@@ -73,7 +81,7 @@ class HolidayManager
         });
 
         return array_values(array_map(function (Holiday $holiday) {
-            return $holiday->canton;
+            return $holiday->cantonId;
         }, $filtered));
     }
 
