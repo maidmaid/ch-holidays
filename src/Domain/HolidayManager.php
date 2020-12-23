@@ -2,7 +2,7 @@
 
 namespace App\Domain;
 
-use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class HolidayManager
@@ -21,12 +21,16 @@ class HolidayManager
      */
     public function getHolidays(): array
     {
-        return $this->serializer->deserialize(
-            file_get_contents($this->projectDir.'/data/holidays/2021.csv'),
-            Holiday::class.'[]',
-            'csv',
-            [CsvEncoder::DELIMITER_KEY => ';']
-        );
+        $finder = (new Finder())
+            ->in($this->projectDir.'/data/holidays')
+        ;
+
+        $holidays = [];
+        foreach ($finder as $file) {
+            $holidays[] = $this->serializer->deserialize($file->getContents(), Holiday::class.'[]', 'csv');
+        }
+
+        return array_merge(...$holidays);
     }
 
     /**
@@ -34,12 +38,8 @@ class HolidayManager
      */
     public function getCantons(): array
     {
-        return $this->serializer->deserialize(
-            file_get_contents($this->projectDir.'/data/cantons.csv'),
-            Canton::class.'[]',
-            'csv',
-            [CsvEncoder::DELIMITER_KEY => ';']
-        );
+        return $this->serializer->deserialize(file_get_contents($this->projectDir.'/data/cantons.csv'), Canton::class.'[]', 'csv');
+
     }
 
     public function getCanton(string $id): Canton
