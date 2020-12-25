@@ -49,13 +49,19 @@
             subDomain: "day",
             data: "{{ path('data') }}",
             start: new Date({{ 'now'|date('Y') }}, 0),
+            highlight: 'now',
             subDomainTextFormat: "%d",
             range: 12,
             cellSize: 20,
             cellRadius: 2,
             cellPadding: 2,
             domainMargin: 10,
-            displayLegend: false,
+            legendHorizontalPosition: "right",
+            legendColors: {
+                empty: "#ededed",
+                min: "#40ffd8",
+                max: "#f20013"
+            },
             onClick: function(date, nb) {
                 var timestamp = '@' + date.getTime() / 1000;
                 $.post('/cantons/' + timestamp, highlightCantons);

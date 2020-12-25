@@ -41,6 +41,11 @@ class AppController extends AbstractController
             $heatmap[$date->getTimestamp()] = ($heatmap[$date->getTimestamp()] ?? 0) + 1;
         }
 
+        // fills no-data with 0
+        foreach (new \DatePeriod(min($dates)->modify('1 jan'), new \DateInterval('P1D'), max($dates)->modify('1 jan next year')) as $date) {
+            $heatmap[$date->getTimestamp()] = $heatmap[$date->getTimestamp()] ?? 0;
+        }
+
         return $this->json($heatmap);
     }
 
