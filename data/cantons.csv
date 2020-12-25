@@ -1,37 +1,37 @@
-id;canton;text;language
-AG;AG;Alle Schulen, kant. Daten;de
-AI1;AI;Alle Schulen;de
-AI2;AI;Oberegg;de
-AR;AR;Alle Schulen;de
-BE1;BE;BE-d: Kindergarten, Volksschulen;de
-BE2;BE;BE-f: Ecole obligatoire;fr
-BL;BL;Alle Schulen;de
-BS;BS;Alle Schulen;de
-FL;FL;Alle Schulen;de
-FR1;FR;Ecoles primaires (ville);fr
-FR2;FR;Ecoles sec. II;fr
-GE;GE;Toutes les écoles;fr
-GL;GL;Alle Schulen;de
-GR1;GR;Bündner Kantonsschule;de
-GR2;GR;Chur Volksschule;de
-GR3;GR;Davos Volksschule;de
-GR4;GR;Mesolcina;de
-JU;JU;Ecoles publiques;fr
-LU;LU;Alle Schulen;de
-NE;NE;Ecole obligatoire;fr
-NW1;NW;Mittelschule;de
-NW2;NW;Volksschule;de
-OW1;OW;Alle Schulen ausser Engelberg;de
-OW2;OW;Engelberg Volksschule und Gymnasium;de
-SG;SG;Alle Schulen;de
-SH;SH;Alle Schulen;de
-SO;SO;Mittel- und  Berufsschulen;de
-SZ;SZ;Volksschule;de
-TG;TG;Alle Schulen;de
-TI;TI;Tutte le scuole;it
-UR;UR;Alle Schulen;de
-VD;VD;Toutes les écoles;fr
-VS1;VS;Oberwallis;de
-VS2;VS;Romand;fr
-ZG;ZG;Öffentlich-rechtliche Schulen;de
-ZH;ZH;Alle Schulen;de
+id;canton;text;language;weight.count;weight.population
+AG;AG;Alle Schulen, kant. Daten;de;1;678207
+AI1;AI;Alle Schulen;de;0.5;27617
+AI2;AI;Oberegg;de;0.5;27617
+AR;AR;Alle Schulen;de;1;16145
+BE1;BE;BE-d: Kindergarten, Volksschulen;de;0.5;517488
+BE2;BE;BE-f: Ecole obligatoire;fr;0.5;517489
+BL;BL;Alle Schulen;de;1;194766
+BS;BS;Alle Schulen;de;1;288132
+FL;FL;Alle Schulen;de;1;38749
+FR1;FR;Ecoles primaires (ville);fr;0.5;159357
+FR2;FR;Ecoles sec. II;fr;0.5;159357
+GE;GE;Toutes les écoles;fr;1;499480
+GL;GL;Alle Schulen;de;1;40403
+GR1;GR;Bündner Kantonsschule;de;0.25;49595
+GR2;GR;Chur Volksschule;de;0.25;49595
+GR3;GR;Davos Volksschule;de;0.25;49595
+GR4;GR;Mesolcina;de;0.25;49594
+JU;JU;Ecoles publiques;fr;1;73419
+LU;LU;Alle Schulen;de;1;409557
+NE;NE;Ecole obligatoire;fr;1;176850
+NW1;NW;Mittelschule;de;1;21611
+NW2;NW;Volksschule;de;1;21612
+OW1;OW;Alle Schulen ausser Engelberg;de;1;18920
+OW2;OW;Engelberg Volksschule und Gymnasium;de;1;18921
+SG;SG;Alle Schulen;de;1;507697
+SH;SH;Alle Schulen;de;1;81991
+SO;SO;Mittel- und  Berufsschulen;de;1;273194
+SZ;SZ;Volksschule;de;1;159165
+TG;TG;Alle Schulen;de;1;276472
+TI;TI;Tutte le scuole;it;1;353343
+UR;UR;Alle Schulen;de;1;36433
+VD;VD;Toutes les écoles;fr;1;799145
+VS1;VS;Oberwallis;de;0.5;171977
+VS2;VS;Romand;fr;0.5;171977
+ZG;ZG;Öffentlich-rechtliche Schulen;de;1;126837
+ZH;ZH;Alle Schulen;de;1;1520968

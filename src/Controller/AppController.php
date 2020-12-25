@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\Canton;
 use App\Domain\HolidayManager;
 use App\Form\HolidayFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,17 +32,14 @@ class AppController extends AbstractController
         $form = $this->createForm(HolidayFormType::class);
         $form->handleRequest($request);
 
-        $dates = $form->isSubmitted() && $form->isValid()
-            ? $holidayManager->getDatesByCantons($form->getData()['cantons'])
-            : $holidayManager->getDates()
-        ;
-
-        $heatmap = [];
-        foreach ($dates as $date) {
-            $heatmap[$date->getTimestamp()] = ($heatmap[$date->getTimestamp()] ?? 0) + 1;
+        $cantons = [];
+        $weightType = Canton::WEIGHT_TYPE_COUNT;
+        if ($form->isSubmitted() && $form->isValid()) {
+            $cantons = $form->getData()['cantons'];
+            $weightType = $form->getData()['canton_weight_type'];
         }
 
-        return $this->json($heatmap);
+        return $this->json($holidayManager->getWeightedTimestamps($weightType, $cantons));
     }
 
 
@@ -50,6 +48,10 @@ class AppController extends AbstractController
      */
     public function cantons(\DateTime $date, HolidayManager $holidayManager): Response
     {
-        return $this->json($holidayManager->getCantonsByDate($date));
+        $cantons = array_map(function (Canton $canton) {
+            return $canton->id;
+        }, $holidayManager->getCantonsByDate($date));
+
+        return $this->json($cantons);
     }
 }

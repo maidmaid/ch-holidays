@@ -42,7 +42,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
-        var $options = $('select option');
+        var $options = $('select#holiday_form_cantons option');
         var cal = new CalHeatMap();
         cal.init({
             domain: "month",
@@ -87,5 +87,9 @@
             $('#year').get(0).text++;
             resetCantons();
         }
+        $('select#holiday_form_canton_weight_type').change(function() {
+            var legend = $(this).children("option:selected").data('legend');
+            cal.setLegend(legend);
+        });
     </script>
 {% endblock %}

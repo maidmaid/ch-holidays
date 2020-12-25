@@ -38,6 +38,24 @@ class HolidayFormType extends AbstractType
                     return s($canton->language)->upper();
                 }
             ])
+            ->add('canton_weight_type', ChoiceType::class, [
+                'choices' => [
+                    'by cantons count' => Canton::WEIGHT_TYPE_COUNT,
+                    'by cantons population' => Canton::WEIGHT_TYPE_POPULATION,
+                ],
+                'choice_attr' => [
+                    'by cantons count' => ['data-legend' => json_encode($this->legend(Canton::WEIGHT_TYPE_COUNT))],
+                    'by cantons population' => ['data-legend' => json_encode($this->legend(Canton::WEIGHT_TYPE_POPULATION))],
+                ],
+                'help' => 'Defines the weight of each canton on the heatmap',
+            ])
         ;
+    }
+
+    private function legend(string $weightType): array
+    {
+        [$min, $max] = $this->holidayManager->getBoundariesWeights($weightType);
+
+        return array_map('ceil', range($min, $max, ($max - $min) / 3));
     }
 }
