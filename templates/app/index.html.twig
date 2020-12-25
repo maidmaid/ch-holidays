@@ -64,6 +64,7 @@
         $('form').change(function() {
             resetCantons();
             $.post('{{ path('data') }}', $('form').serialize(), function (data) {
+                updateLegend();
                 cal.update(data);
             })
         });
@@ -87,5 +88,20 @@
             $('#year').get(0).text++;
             resetCantons();
         }
+        function updateLegend() {
+            var length = $('select option:selected').length;
+            if (0 === length) {
+                length = $('select option').length;
+            }
+            var step = length / 5;
+            var set = new Set();
+            for (var i = step; i < length; i += step) {
+                set.add(Math.ceil(i));
+            }
+            cal.setLegend([...set]);
+        }
+        $(document).ready(function () {
+            updateLegend();
+        });
     </script>
 {% endblock %}
