@@ -14,6 +14,12 @@
 
 {% block main %}
     <div class="container-fluid">
+        <p class="lead">Holidays calendar of swiss cantons.</p>
+        <p>
+            You can select a specific year.
+            You can also filter the calendar by cantons in the list.
+            Finally, you can select a date in the calendar to see the cantons which are on holidays for the given date.
+        </p>
         <div id="cal-heatmap"></div>
         <div>
             <nav aria-label="navigation">
@@ -34,7 +40,8 @@
         </div>
         {{ form(form) }}
         <div>
-            <a href="https://www.edk.ch/dyn/11707.php" class="float-start">source</a>
+            <a href="https://www.edk.ch/dyn/11707.php">Source</a>
+            <a href="https://github.com/maidmaid/ch-holidays">Github</a>
         </div>
     </div>
 {% endblock %}
