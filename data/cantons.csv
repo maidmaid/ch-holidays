@@ -6,6 +6,7 @@ AR;AR;Alle Schulen;de
 BE1;BE;BE-d: Kindergarten, Volksschulen;de
 BE2;BE;BE-f: Ecole obligatoire;fr
 BL;BL;Alle Schulen;de
+BL2;BL;Gymnasium Laufenthal-Thierstein;de
 BS;BS;Alle Schulen;de
 FL;FL;Alle Schulen;de
 FR1;FR;Ecoles primaires (ville);fr
@@ -33,5 +34,6 @@ UR;UR;Alle Schulen;de
 VD;VD;Toutes les écoles;fr
 VS1;VS;Oberwallis;de
 VS2;VS;Romand;fr
+VS3;VS;Alle Schulen ausser Tourismusgem;de
 ZG;ZG;Öffentlich-rechtliche Schulen;de
 ZH;ZH;Alle Schulen;de
