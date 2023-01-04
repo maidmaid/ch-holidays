@@ -52,8 +52,6 @@ RUN mkdir -p /var/run/php
 COPY --link docker/php/docker-healthcheck.sh /usr/local/bin/docker-healthcheck
 RUN chmod +x /usr/local/bin/docker-healthcheck
 
-HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD ["docker-healthcheck"]
-
 COPY --link docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
@@ -124,7 +122,6 @@ COPY --link docker/caddy/Caddyfile /etc/caddy/Caddyfile
 
 FROM app_php AS app_all_inclusive
 
-RUN apk add --no-cache caddy>2.6
 COPY --from=app_caddy_builder --link /usr/bin/caddy /usr/sbin/caddy
 COPY --link docker/caddy/Caddyfile /etc/caddy/Caddyfile
 
