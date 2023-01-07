@@ -1,12 +1,12 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Pull latest
+  - id: Pull latest
+    name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
     args:
       - '-c'
       - 'docker pull $_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:latest || exit 0'
-  - name: gcr.io/cloud-builders/docker
-    id: Build
+  - id: Build
+    name: gcr.io/cloud-builders/docker
     args:
       - build
       - '-t'
@@ -14,18 +14,20 @@ steps:
       - '-t'
       - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:latest'
       - .
-  - name: gcr.io/cloud-builders/docker
-    id: Push tag
+    env:
+      - 'DOCKER_BUILDKIT=1'
+  - id: Push tag
+    name: gcr.io/cloud-builders/docker
     args:
       - push
       - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$TAG_NAME'
-  - name: gcr.io/cloud-builders/docker
-    id: Push latest
+  - id: Push latest
+    name: gcr.io/cloud-builders/docker
     args:
       - push
       - '$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:latest'
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-    id: Deploy
+  - id: Deploy
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     entrypoint: gcloud
     args:
       - run
