@@ -30,6 +30,7 @@ services:
       target: app_caddy
     depends_on:
       - php
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch"]
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost, caddy:80}
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
@@ -39,6 +40,7 @@ services:
       - php_socket:/var/run/php
       - caddy_data:/data
       - caddy_config:/config
+      - docker/caddy/Caddyfile:/etc/caddy/Caddyfile
     ports:
       # HTTP
       - target: 80
