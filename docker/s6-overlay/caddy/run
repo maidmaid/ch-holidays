@@ -1,0 +1,3 @@
+#!/command/with-contenv sh
+until docker-healthcheck > /dev/null 2>&1; do sleep 1; done
+caddy run --config /etc/caddy/Caddyfile --adapter caddyfile

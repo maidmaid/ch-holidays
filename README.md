@@ -2,4 +2,4 @@
 
 *Holidays calendar of swiss cantons.*
 
-See [https://ch-holidays.herokuapp.com/](https://ch-holidays.herokuapp.com/).
+See [https://ch-holidays-46fkkhawsa-oa.a.run.app](https://ch-holidays-46fkkhawsa-oa.a.run.app).
