@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
-use App\Domain\Canton;
-use App\Domain\HolidayManager;
+use App\Entity\Canton;
+use App\Repository\CantonRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -11,32 +11,25 @@ use function Symfony\Component\String\s;
 
 class HolidayFormType extends AbstractType
 {
-    private $holidayManager;
-
-    public function __construct(HolidayManager $holidayManager)
+    public function __construct(private CantonRepository $cantonRepository)
     {
-        $this->holidayManager = $holidayManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $cantons = $this->holidayManager->getCantons();
+        $cantons = $this->cantonRepository->findAll();
 
         $builder
             ->add('cantons', ChoiceType::class, [
                 'choices' => $cantons,
                 'choice_value' => 'id',
-                'choice_label' => function (Canton $canton) {
-                    return (string) $canton;
-                },
+                'choice_label' => static fn (Canton $canton): string => (string) $canton,
                 'multiple' => true,
                 'attr' => [
                     'size' => count($cantons) + 2,
                 ],
                 'label' => false,
-                'group_by' => function (Canton $canton) {
-                    return s($canton->language)->upper();
-                }
+                'group_by' => static fn (Canton $canton): string => s($canton->getLanguage())->upper()->toString(),
             ])
         ;
     }

@@ -13,72 +13,114 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container-fluid">
-        <p class="lead">Holidays calendar of swiss cantons.</p>
-        <p>
-            You can select a specific year.
-            You can also filter the calendar by cantons in the list.
-            Finally, you can select a date in the calendar to see the cantons which are on holidays for the given date.
-        </p>
-        <div id="cal-heatmap"></div>
-        <div>
-            <nav aria-label="navigation">
-                <ul class="pagination pagination-lg">
-                    <li class="page-item" onclick="previousYear()">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <li class="page-item disabled"><a class="page-link" href="#" id="year">{{ 'now'|date('Y') }}</a></li>
-                    <li class="page-item" onclick="nextYear()">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+<div class="container-fluid bg-dark" data-bs-theme="dark">
+    <div class="row">
+        <div class="sidebar col-md-3 col-lg-2">
+            <div tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+                <div class="d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
+                    <nav aria-label="navigation">
+                        <ul class="pagination">
+                            <li class="page-item" onclick="previousYear()">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item disabled"><a class="page-link" href="#" id="year">{{ 'now'|date('Y') }}</a></li>
+                            <li class="page-item" onclick="nextYear()">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    {{ form(form) }}
+                </div>
+            </div>
         </div>
-        {{ form(form) }}
-        <div>
-            <a href="https://www.edk.ch">edk.ch</a>
-            <a href="https://github.com/maidmaid/ch-holidays">Github</a>
-        </div>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 p-2">
+            <h1>Holidays calendar of swiss cantons.</h1>
+            <p>
+                You can select a specific year.
+                You can also filter the calendar by cantons in the list.
+                Finally, you can select a date in the calendar to see the cantons which are on holidays for the given date.
+                Data from <a href="https://www.edk.ch">edk.ch</a>.
+                Code on <a href="https://github.com/maidmaid/ch-holidays">Github</a>.
+            </p>
+            <div id="cal-heatmap"></div>
+        </main>
     </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript">
         var $options = $('select option');
-        var cal = new CalHeatMap();
-        cal.init({
-            domain: "month",
-            subDomain: "day",
-            data: "{{ path('data') }}",
-            start: new Date({{ 'now'|date('Y') }}, 0),
-            highlight: 'now',
-            subDomainTextFormat: "%d",
-            range: 12,
-            cellSize: 20,
-            cellRadius: 2,
-            cellPadding: 2,
-            domainMargin: 10,
-            legendHorizontalPosition: "right",
-            legendColors: {
-                empty: "#ededed",
-                min: "#40ffd8",
-                max: "#f20013"
+        const cal = new CalHeatmap();
+        cal.paint({
+            domain: {
+              type: 'month',
+              gutter: 1,
+              dynamicDimension: true,
             },
-            onClick: function(date, nb) {
-                var timestamp = '@' + date.getTime() / 1000;
-                $.post('/cantons/' + timestamp, highlightCantons);
-            }
+            subDomain: {
+              type: 'ghDay',
+              label: 'D',
+              width: 24,
+              height: 24,
+              gutter: 0,
+              radius: 0,
+            },
+            data: {
+              source: "{{ path('data') }}?year={{ '{{start=YYYY}}' }}",
+              x: 'date',
+              y: 'count',
+              defaultValue: 0,
+            },
+            date: {
+              start: new Date('2024-01-01'),
+              highlight: [
+                new Date(),
+              ],
+              locale: { weekStart: 1 },
+            },
+            scale: {
+              color: {
+                scheme: 'Reds',
+                domain: [1, 6, 11, 16, 21, 26],
+                type: 'threshold',
+              },
+            },
+          },
+          [
+            [
+              Tooltip,
+              {
+                text: function (timestamp, value, dayjsDate) {
+                  return `${value} canton(s)`;
+                },
+              },
+            ],
+            [Legend, {}],
+            [
+              CalendarLabel,
+              {
+                position: 'right',
+                text: () => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                textAlign: 'start',
+                width: 30,
+                padding: [0, 0, 0, 5],
+              },
+            ]
+          ],
+        );
+        cal.on('click', (event, timestamp, value) => {
+            $.post('/cantons/' + timestamp / 1000, highlightCantons);
         });
         $('form').change(function() {
             resetCantons();
             $.post('{{ path('data') }}', $('form').serialize(), function (data) {
-                updateLegend();
-                cal.update(data);
+                cal.fill(data);
             })
         });
         function highlightCantons(cantons) {
@@ -101,20 +143,5 @@
             $('#year').get(0).text++;
             resetCantons();
         }
-        function updateLegend() {
-            var length = $('select option:selected').length;
-            if (0 === length) {
-                length = $('select option').length;
-            }
-            var step = length / 5;
-            var set = new Set();
-            for (var i = step; i < length; i += step) {
-                set.add(Math.ceil(i));
-            }
-            cal.setLegend([...set]);
-        }
-        $(document).ready(function () {
-            updateLegend();
-        });
     </script>
 {% endblock %}
