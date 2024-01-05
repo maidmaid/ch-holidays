@@ -50,35 +50,56 @@
     {{ parent() }}
     <script type="text/javascript">
         var $options = $('select option');
-        var cal = new CalHeatMap();
-        cal.init({
-            domain: "month",
-            subDomain: "day",
-            data: "{{ path('data') }}",
-            start: new Date({{ 'now'|date('Y') }}, 0),
-            highlight: 'now',
-            subDomainTextFormat: "%d",
-            range: 12,
-            cellSize: 20,
-            cellRadius: 2,
-            cellPadding: 2,
-            domainMargin: 10,
-            legendHorizontalPosition: "right",
-            legendColors: {
-                empty: "#ededed",
-                min: "#40ffd8",
-                max: "#f20013"
+        const cal = new CalHeatmap();
+        cal.paint({
+            domain: {type: 'month', gutter: 10, dynamicDimension: false},
+            subDomain: {
+              type: 'day',
+              label: 'D',
+              width: 20,
+              height: 20,
+              radius: 2,
             },
-            onClick: function(date, nb) {
-                var timestamp = '@' + date.getTime() / 1000;
-                $.post('/cantons/' + timestamp, highlightCantons);
-            }
+            data: {
+              source: "{{ path('data') }}?year={{ '{{start=YYYY}}' }}",
+              x: 'date',
+              y: 'count',
+              defaultValue: 0,
+            },
+            date: {
+              start: new Date('2024-01-01'),
+              highlight: [
+                new Date(),
+              ],
+              locale: { weekStart: 1 },
+            },
+            scale: {
+              color: {
+                scheme: 'Reds',
+                domain: [1, 10, 20, 30],
+                type: 'threshold',
+              },
+            },
+          },
+          [
+            [
+              Tooltip,
+              {
+                text: function (timestamp, value, dayjsDate) {
+                  return `${value} canton(s)`;
+                },
+              },
+            ],
+            [Legend, {}]
+          ],
+        );
+        cal.on('click', (event, timestamp, value) => {
+            $.post('/cantons/' + timestamp / 1000, highlightCantons);
         });
         $('form').change(function() {
             resetCantons();
             $.post('{{ path('data') }}', $('form').serialize(), function (data) {
-                updateLegend();
-                cal.update(data);
+                cal.fill(data);
             })
         });
         function highlightCantons(cantons) {
@@ -101,20 +122,5 @@
             $('#year').get(0).text++;
             resetCantons();
         }
-        function updateLegend() {
-            var length = $('select option:selected').length;
-            if (0 === length) {
-                length = $('select option').length;
-            }
-            var step = length / 5;
-            var set = new Set();
-            for (var i = step; i < length; i += step) {
-                set.add(Math.ceil(i));
-            }
-            cal.setLegend([...set]);
-        }
-        $(document).ready(function () {
-            updateLegend();
-        });
     </script>
 {% endblock %}

@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
-use App\Domain\HolidayManager;
+use App\Entity\Canton;
 use App\Form\HolidayFormType;
+use App\Repository\CantonRepository;
+use App\Repository\HolidayRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,35 +28,54 @@ class AppController extends AbstractController
     /**
      * @Route("/data", name="data")
      */
-    public function data(Request $request, HolidayManager $holidayManager): Response
+    public function data(Request $request, HolidayRepository $holidayRepository): Response
     {
-        $form = $this->createForm(HolidayFormType::class);
-        $form->handleRequest($request);
+        $year = $request->get('year', date('Y'));
 
-        $dates = $form->isSubmitted() && $form->isValid()
-            ? $holidayManager->getDatesByCantons($form->getData()['cantons'])
-            : $holidayManager->getDates()
+        $form = $this->createForm(HolidayFormType::class);
+
+        $qb = $holidayRepository->createQueryBuilder('h')
+            ->addSelect('COUNT(h.id) as count')
+            ->where('h.date BETWEEN :start AND :end')
+            ->setParameter('start', $year.'-01-01')
+            ->setParameter('end', $year.'-12-31')
+            ->groupBy('h.date')
+            ->orderBy('h.date', 'ASC')
         ;
 
-        $heatmap = [];
-        foreach ($dates as $date) {
-            $heatmap[$date->getTimestamp()] = ($heatmap[$date->getTimestamp()] ?? 0) + 1;
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $qb->andWhere('h.canton IN (:cantons)')
+                ->setParameter('cantons', $form->getData()['cantons'])
+            ;
         }
 
-        // fills no-data with 0
-        foreach (new \DatePeriod(min($dates)->modify('1 jan'), new \DateInterval('P1D'), max($dates)->modify('1 jan next year')) as $date) {
-            $heatmap[$date->getTimestamp()] = $heatmap[$date->getTimestamp()] ?? 0;
+        $holidaysCounts = $qb->getQuery()->getResult();
+
+        $heatmap = [];
+        foreach ($holidaysCounts as $holidayCount) {
+            $heatmap[] = [
+                'date' => $holidayCount[0]->getDate()->getTimestamp() * 1000,
+                'count' => $holidayCount['count'],
+            ];
         }
 
         return $this->json($heatmap);
     }
 
-
     /**
      * @Route("/cantons/{date}", name="cantons")
      */
-    public function cantons(\DateTime $date, HolidayManager $holidayManager): Response
+    public function cantons(\DateTimeImmutable $date, CantonRepository $cantonRepository): Response
     {
-        return $this->json($holidayManager->getCantonsByDate($date));
+        $cantons = $cantonRepository->createQueryBuilder('c')
+            ->join('c.holidays', 'h')
+            ->where('h.date = :date')
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->getQuery()
+            ->getResult()
+        ;
+
+        return $this->json(array_map(static fn (Canton $c): string => $c->getId(), $cantons));
     }
 }
