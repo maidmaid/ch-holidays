@@ -8,14 +8,9 @@
             <link rel="stylesheet" href="https://unpkg.com/cal-heatmap/dist/cal-heatmap.css">
         {% endblock %}
     </head>
-    <body class="d-flex h-100 text-white bg-dark">
+    <body class="text-white bg-dark">
         {% block body %}
-            <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-                <main class="px-3">
-                    <h1>CH holidays</h1>
-                    {% block main %}{% endblock %}
-                </main>
-            </div>
+            {% block main %}{% endblock %}
         {% endblock %}
         {% block javascripts %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -25,6 +20,7 @@
             <script src="https://unpkg.com/@popperjs/core@2"></script>
             <script src="https://unpkg.com/cal-heatmap/dist/plugins/Tooltip.min.js"></script>
             <script src="https://unpkg.com/cal-heatmap/dist/plugins/Legend.min.js"></script>
+            <script src="https://unpkg.com/cal-heatmap/dist/plugins/CalendarLabel.min.js"></script>
         {% endblock %}
     </body>
 </html>

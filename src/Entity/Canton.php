@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=CantonRepository::class)
+ * @ORM\Table(name="canton", indexes={@ORM\Index(name="canton_idx", columns={"canton"})})
  */
 class Canton
 {

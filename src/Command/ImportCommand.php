@@ -73,6 +73,11 @@ class ImportCommand extends Command
             $this->em->clear();
         }
 
+        $io->section('Delete "FL" (Liechtenstein) data');
+
+        $this->em->getConnection()->executeStatement('delete from holiday where canton_id = "FL"');
+        $this->em->getConnection()->executeStatement('delete from canton where id = "FL"');
+
         return Command::SUCCESS;
     }
 }
