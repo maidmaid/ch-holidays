@@ -11,22 +11,25 @@ use Doctrine\ORM\Mapping as ORM;
 class HolidayType
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: "string", length: 10)]
+    private ?string $id = null;
 
     #[ORM\OneToMany(mappedBy: 'type', targetEntity: Holiday::class)]
     private Collection $holidays;
-
-    #[ORM\Column(length: 10)]
-    private ?string $name = null;
 
     public function __construct()
     {
         $this->holidays = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -57,18 +60,6 @@ class HolidayType
                 $holiday->setType(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
 
         return $this;
     }

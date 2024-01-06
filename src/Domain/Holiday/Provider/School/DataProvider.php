@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Domain\Import;
+namespace App\Domain\Holiday\Provider\School;
 
-use App\Domain\Import\Model\Canton;
-use App\Domain\Import\Model\Holiday;
+use App\Domain\Holiday\Provider\School\Model\Holiday;
+use App\Domain\Holiday\Provider\School\Model\School;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -21,10 +21,11 @@ class DataProvider
     /**
      * @return Holiday[]
      */
-    public function getHolidays(): array
+    public function getHolidays(int $year): array
     {
         $finder = (new Finder())
-            ->in($this->projectDir.'/data/import/holidays')
+            ->in($this->projectDir.'/data/school/holidays')
+            ->path(sprintf('%d.csv', $year))
         ;
 
         $holidays = [];
@@ -36,10 +37,15 @@ class DataProvider
     }
 
     /**
-     * @return Canton[]
+     * @return School[]
      */
-    public function getCantons(): array
+    public function getSchools(): iterable
     {
-        return $this->serializer->deserialize(file_get_contents($this->projectDir.'/data/import/cantons.csv'), Canton::class.'[]', 'csv');
+        /** @var School[] $schools */
+        $schools = $this->serializer->deserialize(file_get_contents($this->projectDir.'/data/school/schools.csv'), School::class.'[]', 'csv');
+
+        foreach ($schools as $school) {
+            yield $school->id => $school;
+        }
     }
 }

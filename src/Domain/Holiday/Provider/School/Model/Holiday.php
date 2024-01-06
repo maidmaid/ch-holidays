@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Domain\Import\Model;
+namespace App\Domain\Holiday\Provider\School\Model;
 
 class Holiday
 {
-    public $cantonId;
+    public $schoolId;
     public $types;
 
     public function getPeriods(): iterable

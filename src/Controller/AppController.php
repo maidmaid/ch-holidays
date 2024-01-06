@@ -35,7 +35,7 @@ class AppController extends AbstractController
         $form = $this->createForm(HolidayFormType::class);
 
         $qb = $holidayRepository->createQueryBuilder('h')
-            ->addSelect('COUNT(DISTINCT c.abbreviation) as count')
+            ->addSelect('COUNT(DISTINCT c.id) as count')
             ->join('h.canton', 'c')
             ->where('h.date BETWEEN :start AND :end')
             ->setParameter('start', $year.'-01-01')

@@ -8,21 +8,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CantonRepository::class)]
-#[ORM\Table(name: 'canton', indexes: [new ORM\Index(columns: ['abbreviation'], name: 'canton_idx')])]
+#[ORM\Table(name: 'canton')]
 class Canton
 {
     #[ORM\Id]
-    #[ORM\Column(type: "string", length: 3)]
+    #[ORM\Column(type: "string", length: 2)]
     private $id;
-
-    #[ORM\Column(type: "string", length: 2)]
-    private $abbreviation;
-
-    #[ORM\Column(type: "string", length: 2)]
-    private $text;
-
-    #[ORM\Column(type: "string", length: 2)]
-    private $language;
 
     #[ORM\OneToMany(mappedBy: "canton", targetEntity: Holiday::class)]
     private $holidays;
@@ -40,42 +31,6 @@ class Canton
     public function setId(string $id): self
     {
         $this->id = $id;
-
-        return $this;
-    }
-
-    public function getAbbreviation(): ?string
-    {
-        return $this->abbreviation;
-    }
-
-    public function setAbbreviation(string $abbreviation): self
-    {
-        $this->abbreviation = $abbreviation;
-
-        return $this;
-    }
-
-    public function getText(): ?string
-    {
-        return $this->text;
-    }
-
-    public function setText(string $text): self
-    {
-        $this->text = $text;
-
-        return $this;
-    }
-
-    public function getLanguage(): ?string
-    {
-        return $this->language;
-    }
-
-    public function setLanguage(string $language): self
-    {
-        $this->language = $language;
 
         return $this;
     }
@@ -108,10 +63,5 @@ class Canton
         }
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return sprintf('%s (%s)', $this->abbreviation, $this->text);
     }
 }
