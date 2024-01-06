@@ -11,11 +11,7 @@ log
 
 route {
     root * /srv/app/public
-    php_fastcgi unix//var/run/php/php-fpm.sock {
-        health_uri /ping
-        health_interval 1s
-        lb_try_duration 5s
-    }
+    php_fastcgi unix//var/run/php/php-fpm.sock
     encode zstd gzip
     file_server
 }
