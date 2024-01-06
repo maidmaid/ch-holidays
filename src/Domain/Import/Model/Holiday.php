@@ -5,18 +5,18 @@ namespace App\Domain\Import\Model;
 class Holiday
 {
     public $cantonId;
-    public $periods;
+    public $types;
 
     public function getPeriods(): iterable
     {
-        foreach ($this->periods as $period => $range) {
-            [$start, $end] = explode('-', $range);
+        foreach ($this->types as $type => $period) {
+            [$start, $end] = explode('-', $period);
 
             if ("" === $start || "" === $end) {
                 continue;
             }
 
-            yield $period => new \DatePeriod(
+            yield $type => new \DatePeriod(
                 new \DateTime($start),
                 new \DateInterval('P1D'),
                 (new \DateTime($end))->modify('+1 day')

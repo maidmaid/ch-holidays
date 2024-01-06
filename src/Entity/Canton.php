@@ -7,37 +7,24 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=CantonRepository::class)
- * @ORM\Table(name="canton", indexes={@ORM\Index(name="canton_idx", columns={"canton"})})
- */
+#[ORM\Entity(repositoryClass: CantonRepository::class)]
+#[ORM\Table(name: 'canton', indexes: [new ORM\Index(columns: ['abbreviation'], name: 'canton_idx')])]
 class Canton
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\Column(type="string", length=3)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: "string", length: 3)]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=2)
-     */
-    private $canton;
+    #[ORM\Column(type: "string", length: 2)]
+    private $abbreviation;
 
-    /**
-     * @ORM\Column(type="text", length=2)
-     */
+    #[ORM\Column(type: "string", length: 2)]
     private $text;
 
-    /**
-     * @ORM\Column(type="string", length=2)
-     */
+    #[ORM\Column(type: "string", length: 2)]
     private $language;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Holiday::class, mappedBy="canton")
-     */
+    #[ORM\OneToMany(mappedBy: "canton", targetEntity: Holiday::class)]
     private $holidays;
 
     public function __construct()
@@ -57,14 +44,14 @@ class Canton
         return $this;
     }
 
-    public function getCanton(): ?string
+    public function getAbbreviation(): ?string
     {
-        return $this->canton;
+        return $this->abbreviation;
     }
 
-    public function setCanton(string $canton): self
+    public function setAbbreviation(string $abbreviation): self
     {
-        $this->canton = $canton;
+        $this->abbreviation = $abbreviation;
 
         return $this;
     }
@@ -125,6 +112,6 @@ class Canton
 
     public function __toString(): string
     {
-        return sprintf('%s (%s)', $this->canton, $this->text);
+        return sprintf('%s (%s)', $this->abbreviation, $this->text);
     }
 }

@@ -35,7 +35,7 @@ class AppController extends AbstractController
         $form = $this->createForm(HolidayFormType::class);
 
         $qb = $holidayRepository->createQueryBuilder('h')
-            ->addSelect('COUNT(DISTINCT c.canton) as count')
+            ->addSelect('COUNT(DISTINCT c.abbreviation) as count')
             ->join('h.canton', 'c')
             ->where('h.date BETWEEN :start AND :end')
             ->setParameter('start', $year.'-01-01')
@@ -46,9 +46,20 @@ class AppController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $qb->andWhere('c IN (:cantons)')
-                ->setParameter('cantons', $form->getData()['cantons'])
-            ;
+            if ([] !== $cantons = $form->getData()['cantons']) {
+                $qb
+                    ->andWhere('c IN (:cantons)')
+                    ->setParameter('cantons', $cantons)
+                ;
+            }
+
+            if ([] !== $types = $form->getData()['types']) {
+                $qb
+                    ->join('h.type', 't')
+                    ->andWhere('t IN (:types)')
+                    ->setParameter('types', $types)
+                ;
+            }
         }
 
         $holidaysCounts = $qb->getQuery()->getResult();

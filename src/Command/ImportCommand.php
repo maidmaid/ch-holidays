@@ -5,7 +5,9 @@ namespace App\Command;
 use App\Domain\Import\DataProvider;
 use App\Entity\Canton;
 use App\Entity\Holiday;
+use App\Entity\HolidayType;
 use App\Repository\CantonRepository;
+use App\Repository\HolidayTypeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -23,6 +25,7 @@ class ImportCommand extends Command
         private DataProvider $dataProvider,
         private EntityManagerInterface $em,
         private CantonRepository $cantonRepository,
+        private HolidayTypeRepository $holidayTypeRepository,
     ) {
         parent::__construct('app:import');
     }
@@ -34,8 +37,10 @@ class ImportCommand extends Command
         $io->section('Clear data');
 
         $this->em->getConnection()->executeStatement('delete from holiday');
+        $this->em->getConnection()->executeStatement('delete from holiday_type');
         $this->em->getConnection()->executeStatement('delete from canton');
         $this->em->getConnection()->executeStatement('update sqlite_sequence set seq = 0 where name = "holiday"');
+        $this->em->getConnection()->executeStatement('update sqlite_sequence set seq = 0 where name = "holiday_type"');
 
         $io->section('Importing cantons');
 
@@ -43,7 +48,7 @@ class ImportCommand extends Command
         foreach ($io->progressIterate($this->dataProvider->getCantons()) as $cantonData) {
             $canton = (new Canton())
                 ->setId($cantonData->id)
-                ->setCanton($cantonData->canton)
+                ->setAbbreviation($cantonData->canton)
                 ->setText($cantonData->text)
                 ->setLanguage($cantonData->language)
             ;
@@ -56,13 +61,21 @@ class ImportCommand extends Command
         $io->section('Importing holidays');
 
         /** @var \App\Domain\Import\Model\Holiday $holidayData */
-        foreach ($io->progressIterate($this->dataProvider->getHolidays()) as $holidayData) {
+        foreach ($io->progressIterate($this->dataProvider->getHolidays()) as $i => $holidayData) {
             foreach ($holidayData->getPeriods() as $name => $period) {
+                if (null === $holidayType = $this->holidayTypeRepository->findOneBy(['name' => $name])) {
+                    $holidayType = (new HolidayType())
+                        ->setName($name)
+                    ;
+
+                    $this->em->persist($holidayType);
+                }
+
                 foreach ($period as $date) {
                     $holiday = (new Holiday())
                         ->setCanton($this->cantonRepository->find($holidayData->cantonId))
                         ->setDate(\DateTimeImmutable::createFromMutable($date))
-                        ->setDescription($name)
+                        ->setType($holidayType)
                     ;
 
                     $this->em->persist($holiday);
