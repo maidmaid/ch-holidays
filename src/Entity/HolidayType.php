@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class HolidayType
 {
     #[ORM\Id]
-    #[ORM\Column(type: "string", length: 10)]
+    #[ORM\Column(type: "string", length: 30)]
     private ?string $id = null;
 
     #[ORM\OneToMany(mappedBy: 'type', targetEntity: Holiday::class)]

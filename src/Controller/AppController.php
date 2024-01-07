@@ -3,22 +3,30 @@
 namespace App\Controller;
 
 use App\Entity\Canton;
+use App\Form\HolidayFiltersType;
 use App\Form\HolidayFormType;
+use App\Form\Model\HolidayFilters;
 use App\Repository\CantonRepository;
 use App\Repository\HolidayRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Wnx\SwissCantons\Canton as WnxCanton;
 
 class AppController extends AbstractController
 {
+    public function __construct()
+    {
+        ini_set('date.timezone', 'UTC');
+    }
+
     /**
      * @Route("/", name="app")
      */
     public function index(): Response
     {
-        $form = $this->createForm(HolidayFormType::class);
+        $form = $this->createForm(HolidayFiltersType::class);
 
         return $this->render('app/index.html.twig', [
             'form' => $form->createView(),
@@ -30,37 +38,37 @@ class AppController extends AbstractController
      */
     public function data(Request $request, HolidayRepository $holidayRepository): Response
     {
-        $year = $request->get('year', date('Y'));
-
-        $form = $this->createForm(HolidayFormType::class);
+        $filters = new HolidayFilters();
+        $form = $this->createForm(HolidayFiltersType::class, $filters);
 
         $qb = $holidayRepository->createQueryBuilder('h')
-            ->addSelect('COUNT(DISTINCT c.id) as count')
-            ->join('h.canton', 'c')
+            ->addSelect('COUNT(DISTINCT h.canton) as count')
             ->where('h.date BETWEEN :start AND :end')
-            ->setParameter('start', $year.'-01-01')
-            ->setParameter('end', $year.'-12-31')
             ->groupBy('h.date')
             ->orderBy('h.date', 'ASC')
         ;
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ([] !== $cantons = $form->getData()['cantons']) {
+            if ([] !== $cantons = $filters->cantons) {
                 $qb
-                    ->andWhere('c IN (:cantons)')
-                    ->setParameter('cantons', $cantons)
+                    ->andWhere('h.canton IN (:cantons)')
+                    ->setParameter('cantons', array_map(static fn (WnxCanton $canton): string => $canton->getAbbreviation(), $cantons))
                 ;
             }
 
-            if ([] !== $types = $form->getData()['types']) {
+            if ([] !== $types = $filters->types) {
                 $qb
-                    ->join('h.type', 't')
-                    ->andWhere('t IN (:types)')
+                    ->andWhere('h.type IN (:types)')
                     ->setParameter('types', $types)
                 ;
             }
         }
+
+        $qb
+            ->setParameter('start', sprintf('%d-01-01', $filters->year))
+            ->setParameter('end', sprintf('%d-12-31', $filters->year))
+        ;
 
         $holidaysCounts = $qb->getQuery()->getResult();
 
