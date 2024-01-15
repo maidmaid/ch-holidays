@@ -18,21 +18,6 @@
         <div class="sidebar col-md-3 col-lg-2">
             <div tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
                 <div class="d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
-                    <nav aria-label="navigation">
-                        <ul class="pagination">
-                            <li class="page-item" onclick="previousYear()">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <li class="page-item disabled"><a class="page-link" href="#" id="year">{{ 'now'|date('Y') }}</a></li>
-                            <li class="page-item" onclick="nextYear()">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
                     {{ form(form) }}
                 </div>
             </div>
@@ -43,8 +28,8 @@
                 You can select a specific year.
                 You can also filter the calendar by cantons in the list.
                 Finally, you can select a date in the calendar to see the cantons which are on holidays for the given date.
-                Data from <a href="https://www.edk.ch">edk.ch</a>.
-                Code on <a href="https://github.com/maidmaid/ch-holidays">Github</a>.
+                Data from <a href="https://www.edk.ch"  target="_blank">edk.ch</a> and <a href="https://en.wikipedia.org/wiki/Public_holidays_in_Switzerland" target="_blank">wiki</a>.
+                Code on <a href="https://github.com/maidmaid/ch-holidays" target="_blank">Github</a>.
             </p>
             <div id="cal-heatmap"></div>
         </main>
@@ -72,16 +57,12 @@
               radius: 0,
             },
             data: {
-              source: "{{ path('data') }}?year={{ '{{start=YYYY}}' }}",
               x: 'date',
               y: 'count',
               defaultValue: 0,
             },
             date: {
-              start: new Date('2024-01-01'),
-              highlight: [
-                new Date(),
-              ],
+              highlight: [new Date()],
               locale: { weekStart: 1 },
             },
             scale: {
@@ -120,7 +101,8 @@
         $('form').change(function() {
             resetCantons();
             $.post('{{ path('data') }}', $('form').serialize(), function (data) {
-                cal.fill(data);
+              cal.jumpTo(new Date($('#holiday_filters_year').val()), true)
+              cal.fill(data);
             })
         });
         function highlightCantons(cantons) {
@@ -133,15 +115,8 @@
         function resetCantons() {
             $options.css({'opacity': 1});
         }
-        function previousYear() {
-            cal.previous(12)
-            $('#year').get(0).text--;
-            resetCantons();
-        }
-        function nextYear() {
-            cal.next(12);
-            $('#year').get(0).text++;
-            resetCantons();
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            $('form').change();
+        });
     </script>
 {% endblock %}

@@ -5,33 +5,24 @@ namespace App\Entity;
 use App\Repository\HolidayRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=HolidayRepository::class)
- */
+#[ORM\Entity(repositoryClass: HolidayRepository::class)]
 class Holiday
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Canton::class, inversedBy="holidays")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: Canton::class, inversedBy: "holidays")]
+    #[ORM\JoinColumn(nullable: false)]
     private $canton;
 
-    /**
-     * @ORM\Column(type="date_immutable")
-     */
+    #[ORM\Column(type: "date_immutable")]
     private $date;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $description;
+    #[ORM\ManyToOne(inversedBy: 'holidays')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?HolidayType $type = null;
 
     public function getId(): ?int
     {
@@ -62,14 +53,14 @@ class Holiday
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getType(): ?HolidayType
     {
-        return $this->description;
+        return $this->type;
     }
 
-    public function setDescription(?string $description): self
+    public function setType(?HolidayType $type): static
     {
-        $this->description = $description;
+        $this->type = $type;
 
         return $this;
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Domain\Import\Model;
+namespace App\Domain\Holiday\Provider\School\Model;
 
-class Canton
+class School
 {
     public $id;
     public $canton;

@@ -2,30 +2,24 @@
 
 namespace App\Entity;
 
-use App\Repository\CantonRepository;
+use App\Repository\HolidayTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CantonRepository::class)]
-#[ORM\Table(name: 'canton')]
-class Canton
+#[ORM\Entity(repositoryClass: HolidayTypeRepository::class)]
+class HolidayType
 {
     #[ORM\Id]
-    #[ORM\Column(type: "string", length: 2)]
-    private $id;
+    #[ORM\Column(type: "string", length: 30)]
+    private ?string $id = null;
 
-    #[ORM\OneToMany(mappedBy: "canton", targetEntity: Holiday::class)]
-    private $holidays;
+    #[ORM\OneToMany(mappedBy: 'type', targetEntity: Holiday::class)]
+    private Collection $holidays;
 
     public function __construct()
     {
         $this->holidays = new ArrayCollection();
-    }
-
-    public function getId(): ?string
-    {
-        return $this->id;
     }
 
     public function setId(string $id): self
@@ -33,6 +27,11 @@ class Canton
         $this->id = $id;
 
         return $this;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
     }
 
     /**
@@ -43,22 +42,22 @@ class Canton
         return $this->holidays;
     }
 
-    public function addHoliday(Holiday $holiday): self
+    public function addHoliday(Holiday $holiday): static
     {
         if (!$this->holidays->contains($holiday)) {
-            $this->holidays[] = $holiday;
-            $holiday->setCanton($this);
+            $this->holidays->add($holiday);
+            $holiday->setType($this);
         }
 
         return $this;
     }
 
-    public function removeHoliday(Holiday $holiday): self
+    public function removeHoliday(Holiday $holiday): static
     {
         if ($this->holidays->removeElement($holiday)) {
             // set the owning side to null (unless already changed)
-            if ($holiday->getCanton() === $this) {
-                $holiday->setCanton(null);
+            if ($holiday->getType() === $this) {
+                $holiday->setType(null);
             }
         }
 
