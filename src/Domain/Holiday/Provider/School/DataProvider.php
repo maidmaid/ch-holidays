@@ -48,4 +48,19 @@ class DataProvider
             yield $school->id => $school;
         }
     }
+
+    /**
+     * @return iterable<int>
+     */
+    public function getAvailableYears(): iterable
+    {
+        $finder = (new Finder())
+            ->in($this->projectDir.'/data/school/holidays')
+            ->sortByName()
+        ;
+
+        foreach ($finder as $file) {
+            yield (int) $file->getBasename('.csv');
+        }
+    }
 }

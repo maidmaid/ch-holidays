@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Domain\Holiday\HolidayProviderRegistry;
-use App\Domain\Holiday\Provider\School\DataProvider;
+use App\Domain\Holiday\Provider\School\DataProvider as SchoolDataProvider;
 use App\Entity\Canton;
 use App\Entity\HolidayType;
 use App\Repository\CantonRepository;
@@ -23,7 +23,7 @@ use Wnx\SwissCantons\Cantons;
 class ImportCommand extends Command
 {
     public function __construct(
-        private DataProvider $dataProvider,
+        private SchoolDataProvider $schoolDataProvider,
         private EntityManagerInterface $em,
         private CantonRepository $cantonRepository,
         private HolidayTypeRepository $holidayTypeRepository,
@@ -67,7 +67,7 @@ class ImportCommand extends Command
         }
         $this->em->flush();
 
-        foreach (range(2020, 2024) as $year) {
+        foreach ($this->schoolDataProvider->getAvailableYears() as $year) {
             $io->section(sprintf('Importing holidays %s', $year));
 
             foreach ($io->progressIterate($this->holidayProviderRegistry->provide($year)) as $i => $holiday) {

@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Domain\Holiday\Provider\School\DataProvider as SchoolDataProvider;
 use App\Entity\HolidayType;
 use App\Form\Model\HolidayFilters;
 use App\Repository\CantonRepository;
@@ -16,8 +17,11 @@ use function Symfony\Component\String\s;
 
 class HolidayFiltersType extends AbstractType
 {
-    public function __construct(private CantonRepository $cantonRepository, private HolidayTypeRepository $holidayTypeRepository)
-    {
+    public function __construct(
+        private CantonRepository $cantonRepository,
+        private HolidayTypeRepository $holidayTypeRepository,
+        private SchoolDataProvider $schoolDataProvider,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -27,7 +31,7 @@ class HolidayFiltersType extends AbstractType
 
         $builder
             ->add('year', ChoiceType::class, [
-                'choices' => range(2020, 2024),
+                'choices' => iterator_to_array($this->schoolDataProvider->getAvailableYears()),
                 'choice_label' => static fn (int $year): string => (string) $year,
                 'data' => date('Y'),
                 'label' => false,
